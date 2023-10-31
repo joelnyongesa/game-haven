@@ -53,7 +53,6 @@
                 "sha256:91438f6b1713274ec3f24970ba303617be86ce5caf6f6a0776f1d04777b6ff5f"
             ],
             "index": "pypi",
-            "markers": "python_version >= '3.8'",
             "version": "==19.12.0"
         },
         "flask": {
