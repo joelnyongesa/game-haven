@@ -10,7 +10,7 @@ db = SQLAlchemy()
 class User(db.Model, SerializerMixin):
     __tablename__="users"
 
-    serialize_rules = ("-game_entries.user", "-game_reviews.user", )
+    serialize_rules = ("-game_entries", "-game_reviews",)
 
     id = db.Column(db.Integer(), primary_key=True)
     username = db.Column(db.String, nullable=False)
@@ -28,7 +28,7 @@ class User(db.Model, SerializerMixin):
 class GameEntry(db.Model, SerializerMixin):
     __tablename__="game_entries"
 
-    serialize_rules = ('-genres.game_entries', '-user.game_entries', '-game_genres.game_entries', )
+    serialize_rules = ("-genres", "-game_reviews", "-user.game_entries",)
 
     id = db.Column(db.Integer(), primary_key=True)
     title = db.Column(db.String(), nullable=False)
@@ -48,7 +48,7 @@ class GameEntry(db.Model, SerializerMixin):
 class GameReview(db.Model, SerializerMixin):
     __tablename__='game_reviews'
 
-    serialize_rules = ('-user.game_reviews', '-game_entries.game_reviews', )
+    serialize_rules = ("-user", "-game_entry",)
 
     id = db.Column(db.Integer, primary_key=True)
     rating = db.Column(db.Integer())
@@ -67,7 +67,7 @@ class GameReview(db.Model, SerializerMixin):
 class Genre(db.Model, SerializerMixin):
     __tablename__="genres"
 
-    serialize_rules = ('-game_entries.genres', '-game_genres.genres', )
+    serialize_rules = ("-game_entries",)
 
     id = db.Column(db.Integer(), primary_key=True)
     name = db.Column(db.String, nullable=False)
@@ -82,7 +82,7 @@ class Genre(db.Model, SerializerMixin):
 class GameGenre(db.Model, SerializerMixin):
     __tablename__ = "game_genres"
 
-    serialize_rules = ('-game_entries.game_genres', '-genres.game_genres', )
+    serialize_rules = ("-game_entry", "-genre",)
 
     id=db.Column(db.Integer, primary_key=True)
     game_entry_id = db.Column(db.Integer(), db.ForeignKey('game_entries.id'))
