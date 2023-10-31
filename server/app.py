@@ -19,6 +19,50 @@ api = Api(app)
 
 db.init_app(app)
 
+class Users(Resource):
+    def get(self):
+        users = [user.to_dict() for user in User.query.all()]
+
+        response = make_response(
+            jsonify(users),
+            200
+        )
+
+        return response
+    
+    def post(self):
+        username = request.get_json()['username']
+        email = request.get_json()['email']
+
+        new_user = User(
+            username=username,
+            email=email
+        )
+
+        db.session.add(new_user)
+        db.session.commit()
+
+        response = make_response(
+            jsonify(new_user.to_dict()),
+            201
+        )
+
+        return response
+
+api.add_resource(Users, '/users', endpoint='users')
+
+class UserByID(Resource):
+    def get(seld, id):
+        user = User.query.filter_by(id=id).first().to_dict()
+
+        response = make_response(
+            jsonify(user),
+            200
+        )
+
+        return response
+
+api.add_resource(UserByID, '/users/<int:id>', endpoint='user_id')
 
 
 class GetGames(Resource):
