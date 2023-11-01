@@ -1,8 +1,8 @@
-"""Created users, genres, game_entries, game_reviews and game_genres tables
+"""Add password hash column to users
 
-Revision ID: ec4c3a8760cf
+Revision ID: 90dcba89a542
 Revises: 
-Create Date: 2023-10-31 17:14:22.282950
+Create Date: 2023-11-01 13:22:53.197393
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'ec4c3a8760cf'
+revision = '90dcba89a542'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -27,6 +27,7 @@ def upgrade():
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('username', sa.String(), nullable=False),
     sa.Column('email', sa.String(), nullable=False),
+    sa.Column('_password_hash', sa.String(), nullable=True),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('email')
     )
@@ -52,8 +53,10 @@ def upgrade():
     sa.Column('rating', sa.Integer(), nullable=True),
     sa.Column('comment', sa.String(), nullable=True),
     sa.Column('date', sa.DateTime(), nullable=True),
+    sa.Column('user_id', sa.Integer(), nullable=True),
     sa.Column('game_entry_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['game_entry_id'], ['game_entries.id'], ),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
     # ### end Alembic commands ###

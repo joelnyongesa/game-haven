@@ -18,7 +18,7 @@ class User(db.Model, SerializerMixin):
     id = db.Column(db.Integer(), primary_key=True)
     username = db.Column(db.String, nullable=False)
     email = db.Column(db.String, nullable=False, unique=True)
-    # _password_hash = db.Column(db.String())
+    _password_hash = db.Column(db.String())
 
     game_entries = db.relationship('GameEntry', backref="user" )
     game_reviews = db.relationship('GameReview', backref="user" )
