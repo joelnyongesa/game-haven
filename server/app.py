@@ -51,6 +51,26 @@ class Users(Resource):
 
 api.add_resource(Users, '/users', endpoint='users')
 
+class Signup(Resource):
+    def post(self):
+        username = request.get_json()["username"]
+        email = request.get_json()["email"]
+        password =request.get_json()["password"]
+        confirm_password = request.get_json()["confirm_password"]
+        
+        if password != confirm_password:
+            return {"error": "Passwords do not match"}
+
+        new_user = User(username=username, email=email)
+        new_user.password_hash = password  # Set the password using password_hash propert
+
+        
+        db.session.add(new_user)
+        db.session.commit()
+        return{"message": "User created successfully", "status":201}
+
+api.add_resource(Signup, "/signup")
+
 class UserByID(Resource):
     def get(seld, id):
         user = User.query.filter_by(id=id).first().to_dict()
