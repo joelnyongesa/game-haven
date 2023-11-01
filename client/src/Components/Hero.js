@@ -1,5 +1,6 @@
 import Button from './Button'
 import gaming_vector from '../gaming_vector.png'
+import { Link } from 'react-router-dom'
 
 function Hero() {
   return (
@@ -10,7 +11,9 @@ function Hero() {
                 Tell us what games you are playing, and review other user's games ON THE FLY
             </p>
             <div>
-                <Button content="Sign Up and Get Started"/>
+                <Link to='/signup'>
+                    <Button content="Sign Up and Get Started"/>
+                </Link>                
             </div>
             
         </div>

@@ -1,8 +1,10 @@
 import React from 'react'
 
-function Button({content, className}) {
+function Button({content, className, type='button'}) {
   return (
-    <button className={`
+    <button
+        type={type}
+       className={`
                 p-3
                 mx-3
                 font-bold
