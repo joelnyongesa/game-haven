@@ -3,7 +3,7 @@ from flask_cors import CORS
 from flask_migrate import Migrate
 from flask_restful import Api, Resource
 from werkzeug.exceptions import NotFound
-from models import db, User, GameEntry, GameGenre, Genre, GameReview
+from models import db, User, GameEntry, GameGenre, Genre
 
 
 app = Flask(__name__)
@@ -212,81 +212,6 @@ def handle_not_found(e):
         )
     
     return response
-
-class GetGameReviews(Resource):
-    def get(self):
-        reviews_list = []
-        reviews = GameReview.query.all()
-        
-        if reviews:
-            for review in reviews:
-                review_dict = review.to_dict()
-                reviews_list.append(review_dict)
-
-            response = make_response(
-                jsonify(reviews_list),
-                200
-            )
-            return response
-
-        response_body = {
-            "Message": "No game reviews at the moment",
-            "status": 404
-        }
-        return response_body
-
-    def post(self):
-        new_review = GameReview(
-            rating=request.get_json()['rating'],
-            comment=request.get_json()['comment'],
-            user_id=request.get_json()['user_id'],
-            game_entry_id=request.get_json()['game_entry_id']
-        )
-
-        if new_review:
-            db.session.add(new_review)
-            db.session.commit()
-
-            new_review_dict = new_review.to_dict()
-            response = make_response(
-                jsonify(new_review_dict),
-                201  # Specify the HTTP status code here
-            )
-            # Add the appropriate headers, such as 'Content-Type'
-            response.headers['Content-Type'] = 'application/json'
-            return response
-
-        response_body = {
-            "error": "Error occurred while creating a game review, check and try again",
-            "status": 400
-        }
-        response = make_response(jsonify(response_body), 400)
-        response.headers['Content-Type'] = 'application/json'
-        return response
-
-
-api.add_resource(GetGameReviews, '/game-reviews')
-
-
-
-class GetGameReviewById(Resource):
-    def get(self, id):
-        review = GameReview.query.get(id)  # Query the review by its ID
-
-        if review:
-            review_dict = review.to_dict()
-            response = make_response(jsonify(review_dict), 200)
-            return response
-
-        response_body = {
-            "Message": "Game review not found",
-            "status": 404
-        }
-        return response_body
-
-api.add_resource(GetGameReviewById, '/game-reviews/<int:id>')
-   
-
 class Genre(Resource):
     def get(self):
         genres = [genre.to_dict() for genre in Genre.query.all()]
@@ -311,10 +236,10 @@ class Genre(Resource):
         )
         return response
     
-api.add_resource(Genre, '/genres', endpoint='genres')         
+api.add_resource(Genre, '/genres', endpoint='genres')
 
 class GameGenre(Resource):
-    def get(self, game_id):
+  def get(self, game_id):
         game_genres = [gg.genre.to_dict() for gg in GameGenre.query.filter_by(game_id=game_id).all()]
 
         response = make_response(
@@ -324,7 +249,7 @@ class GameGenre(Resource):
 
         return response
 
-    def post(self, game_id, genre_id):
+def post(self, game_id, genre_id):
         game_genre = GameGenre(game_id=game_id, genre_id=genre_id)
 
         db.session.add(game_genre)
