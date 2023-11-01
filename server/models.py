@@ -1,10 +1,13 @@
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from sqlalchemy_serializer import SerializerMixin
+from flask_bcrypt import Bcrypt
+from sqlalchemy.ext.hybrid import hybrid_property
 
 
 
 db = SQLAlchemy()
+bcrypt = Bcrypt()
 
 
 class User(db.Model, SerializerMixin):
@@ -22,6 +25,33 @@ class User(db.Model, SerializerMixin):
 
     def __repr__(self):
         return f'<User: {self.username}>'
+    
+
+    @hybrid_property
+    def password_hash(self):
+        raise AttributeError ("Not allowed")
+    
+
+    @password_hash.setter
+
+    def password_hash (self, password):
+        self._password_hash = bcrypt.generate_password_hash(password).decode("utf-8")
+
+    def check_password(self, password):
+        return bcrypt.check_password_hash(self._password_hash, password)
+        
+    # def authenticate(self, password):
+    #     return bcrypt.check_password_hash(self._password_hash,password.encode("utf-8"))
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'title': self.title,
+            'platform': self.platform,
+            'description': self.description,
+            'user_id': self.user_id
+            # Add more fields if needed
+        }
 
 
 
