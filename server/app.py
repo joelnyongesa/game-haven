@@ -285,7 +285,60 @@ class GetGameReviewById(Resource):
         return response_body
 
 api.add_resource(GetGameReviewById, '/game-reviews/<int:id>')
-            
+   
+
+class Genre(Resource):
+    def get(self):
+        genres = [genre.to_dict() for genre in Genre.query.all()]
+        response = make_response(
+            jsonify(genres),
+            200
+        )
+        return response
+
+    def post(self):
+        genre_name = request.get_json()['genre_name']
+        new_genre = Genre(
+            genre_name=genre_name
+        )
+        
+        db.session.add(new_genre)
+        db.session.commit()
+
+        response = make_response(
+            jsonify(new_genre.to_dict()),
+            201
+        )
+        return response
+    
+api.add_resource(Genre, '/genres', endpoint='genres')         
+
+class GameGenre(Resource):
+    def get(self, game_id):
+        game_genres = [gg.genre.to_dict() for gg in GameGenre.query.filter_by(game_id=game_id).all()]
+
+        response = make_response(
+            jsonify(game_genres),
+            200
+        )
+
+        return response
+
+    def post(self, game_id, genre_id):
+        game_genre = GameGenre(game_id=game_id, genre_id=genre_id)
+
+        db.session.add(game_genre)
+        db.session.commit()
+
+        response = make_response(
+            jsonify(game_genre.to_dict()),
+            201
+        )
+
+        return response
+
+# Add the GameGenre resource to the API
+api.add_resource(GameGenre, '/games/<int:game_id>/genres/<int:genre_id>', endpoint='game_genre')
 
 if __name__ == "__main__":
  app.run(port=5555, debug=True)
