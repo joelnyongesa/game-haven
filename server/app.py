@@ -23,7 +23,7 @@ db.init_app(app)
 
 @app.before_request
 def check_if_logged_in():
-    allowed_endpoints=['users','games','signup', 'login','logout','session']
+    allowed_endpoints=['signup', 'login']
     if not session.get('person_id') and request.endpoint not in allowed_endpoints:
             return {"error":"first login"}
 
@@ -65,44 +65,60 @@ class Signup(Resource):
         username = request.get_json()["username"]
         email = request.get_json()["email"]
         password =request.get_json()["password"]
-        confirm_password = request.get_json()["confirm_password"]
 
-        existing_user = User.query.filter_by(email=email).first()
-        if existing_user:
-            return {"error": "Email already exists in the database"}
+        if username and email:
+           user = User(
+               username=username,
+               email=email
+           ) 
+
+           user.password_hash = password
+
+           db.session.add(user)
+           db.session.commit()
+
+           response = make_response(jsonify(user.to_dict()), 201)
+
+           return response
+        response = make_response(
+            jsonify({"error": "Username or email exists"}), 401
+        )
+        return response
+        # confirm_password = request.get_json()["confirm_password"]
+
+        # existing_user = User.query.filter_by(email=email).first()
+        # if existing_user:
+        #     return {"error": "Email already exists in the database"}
         
-        if password != confirm_password:
-            return {"error": "Passwords do not match"}
+        # if password != confirm_password:
+        #     return {"error": "Passwords do not match"}
 
-        new_user = User(username=username, email=email)
-        new_user.password_hash = password  
+        # new_user = User(username=username, email=email)
+        # new_user.password_hash = password  
 
         
-        db.session.add(new_user)
-        db.session.commit()
-        return{"message": "User created successfully", "status":201}
+        # db.session.add(new_user)
+        # db.session.commit()
+        # return{"message": "User created successfully", "status":201}
 
 api.add_resource(Signup, "/signup")
 
 
 class Login(Resource):
     def post(self):
-        username = request.get_json()['username']
+        email = request.get_json()['email']
         password = request.get_json().get('password')
 
-        user = User.query.filter(User.username == username).first()  
+        user = User.query.filter(User.email == email).first()  
 
-        if user:
-            
-            if user.authenticate(password):
-                session['person_id'] = user.id
-                user_dict = user.to_dict()
-                response_body = {"message": "logged in successfully","status": 201}
-                return response_body
-            else:
-                return {"error": "password incorrect"}
+        if user and user.authenticate(password):
+          session['person_id'] = user.id
+          user_dict = user.to_dict()
+
+          response_body = make_response(jsonify(user_dict), 200)
+          return response_body
         else:
-            return {"error": "username not found"} 
+            return {"error": "Invalid Email or Password"}, 401
 
 
 
