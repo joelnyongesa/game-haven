@@ -13,14 +13,14 @@ bcrypt = Bcrypt()
 class User(db.Model, SerializerMixin):
     __tablename__="users"
 
-    serialize_rules = ("-game_entries", "-game_reviews",)
+    serialize_rules = ("-game_reviews.user",)
 
     id = db.Column(db.Integer(), primary_key=True)
     username = db.Column(db.String, nullable=False)
     email = db.Column(db.String, nullable=False, unique=True)
     _password_hash = db.Column(db.String())
 
-    game_entries = db.relationship('GameEntry', backref="user" )
+    # game_entries = db.relationship('GameEntry', backref="user" )
     game_reviews = db.relationship('GameReview', backref="user" )
 
     def _repr_(self):
@@ -43,15 +43,12 @@ class User(db.Model, SerializerMixin):
     def authenticate(self, password):
         return bcrypt.check_password_hash(self._password_hash,password.encode("utf-8"))
 
-    
-   
-
 
 
 class GameEntry(db.Model, SerializerMixin):
     __tablename__="game_entries"
 
-    serialize_rules = ("-genres", "-game_reviews", "-user",)
+    serialize_rules = ("-game_genres.game_entry", "-game_reviews.game_entry", )
 
     id = db.Column(db.Integer(), primary_key=True)
     title = db.Column(db.String(), nullable=False)
@@ -59,10 +56,10 @@ class GameEntry(db.Model, SerializerMixin):
     image_url = db.Column(db.String(255))
     description = db.Column(db.String(100))
 
-    user_id = db.Column(db.Integer(), db. ForeignKey('users.id'))
+    # user_id = db.Column(db.Integer(), db.ForeignKey('users.id'))
     
 
-    genres = db.relationship('GameGenre', backref='game_entry')
+    game_genres = db.relationship('GameGenre', backref='game_entry')
     game_reviews = db.relationship('GameReview', backref='game_entry')
 
     def _repr_(self):
@@ -72,7 +69,7 @@ class GameEntry(db.Model, SerializerMixin):
 class GameReview(db.Model, SerializerMixin):
     __tablename__='game_reviews'
 
-    serialize_rules = ("-user", "-game_entry",)
+    serialize_rules = ("-user.game_reviews", "-game_entry.game_reviews",)
 
     id = db.Column(db.Integer, primary_key=True)
     rating = db.Column(db.Integer())
@@ -91,12 +88,12 @@ class GameReview(db.Model, SerializerMixin):
 class Genre(db.Model, SerializerMixin):
     __tablename__="genres"
 
-    serialize_rules = ("-game_entries",)
+    serialize_rules = ("-game_genres.genre",)
 
     id = db.Column(db.Integer(), primary_key=True)
     name = db.Column(db.String, nullable=False)
 
-    game_entries = db.relationship('GameGenre', backref='genre')
+    game_genres = db.relationship('GameGenre', backref='genre')
 
     def _repr_(self):
         return f'<Genre: {self.name}>'
@@ -106,7 +103,7 @@ class Genre(db.Model, SerializerMixin):
 class GameGenre(db.Model, SerializerMixin):
     __tablename__ = "game_genres"
 
-    serialize_rules = ("-game_entry", "-genre",)
+    serialize_rules = ("-game_entry.game_genres", "-genre.game_genres",)
 
     id=db.Column(db.Integer, primary_key=True)
     game_entry_id = db.Column(db.Integer(), db.ForeignKey('game_entries.id'))
