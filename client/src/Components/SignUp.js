@@ -2,10 +2,24 @@ import {Formik, Form, Field} from 'formik'
 import * as Yup from 'yup'
 import YupPassword from 'yup-password'
 import Button from './Button';
+import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import { useSnackbar } from 'notistack';
+
 
 
 
 function SignUp() {
+    const [refreshPage, setRefreshPage] = useState(false)
+    const navigate = useNavigate();
+    const {enqueueSnackbar} = useSnackbar();
+
+    function handleLogInClick(){
+        navigate('/login')
+    }
+
+
+
     YupPassword(Yup)
     const errorMessagesSchema = Yup.object().shape({
         username: Yup.string()
@@ -22,6 +36,8 @@ function SignUp() {
             .required('Please retype your password')
             .oneOf([Yup.ref('password')], "Passwords do not match!")
     });
+
+    
   return (
     <>
             <div className='flex flex-col items-center justify-center p-20'>
@@ -34,8 +50,22 @@ function SignUp() {
                         confirmPassword: ''
                     }}  
                     validationSchema={errorMessagesSchema}  
-                    onSubmit={(values)=>{
-                        console.log(values)
+                    onSubmit={({confirmPassword, e, ...values})=>{
+                        fetch("/signup",{
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify(values, null, 2),
+                        }).then((res)=>{
+                            console.log(res.status);
+                            if (res.status === 201){
+                                navigate('/login');
+                                setRefreshPage(!refreshPage);
+                                enqueueSnackbar("Account created successfully", {variant: "success"})
+                            }                           
+                        })
+                        e.resetForm();
                     }}
                 >
                     {({errors, touched})=>(
@@ -64,11 +94,12 @@ function SignUp() {
                             <Field type='password' name='confirmPassword' id='confirmPassword' className='text-rich-black px-2 rounded' />
                             {touched.confirmPassword && errors.confirmPassword && <div className='text-indian-red'>{errors.confirmPassword}</div>}
 
-                            <Button type='submit' content='Sign Up' className='text-l my-5 mx-auto p-1 w-2/6'/>
+                            <Button type='submit' content='Sign Up' className='text-sm my-5 mx-auto px-1 py-2 w-2/6'/>
                         </Form>
                     )}
 
                 </Formik>
+                <p>Already Registered? <span className='font-bold' onClick={handleLogInClick}>Log In Here</span></p>
             </div>
     </>
   )
