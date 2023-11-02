@@ -108,7 +108,7 @@ with app.app_context():
             platform=rc(game_platforms),
             image_url=rc(image_urls),
             description=fake.sentence(15),
-            user=rc(users),
+            # user=rc(users),
             # genre=rc(genres)
         )
 
