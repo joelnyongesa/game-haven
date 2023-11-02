@@ -46,6 +46,7 @@ function Login() {
                           if (res.status === 200){
                             // console.log("Logged In successfully")
                             enqueueSnackbar("Log in successful!", {variant: "success"})
+                            navigate('/all-games')
                             // Navigate
                           }
                           else{
