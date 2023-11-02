@@ -23,7 +23,7 @@ db.init_app(app)
 
 @app.before_request
 def check_if_logged_in():
-    allowed_endpoints=['signup', 'login']
+    allowed_endpoints=['signup', 'login', 'games']
     if not session.get('person_id') and request.endpoint not in allowed_endpoints:
             return {"error":"first login"}
 
@@ -223,7 +223,7 @@ class GetGames(Resource):
 
 
     
-api.add_resource(GetGames, '/games')
+api.add_resource(GetGames, '/games', endpoint='games')
 
 
 class GetGameById(Resource):
