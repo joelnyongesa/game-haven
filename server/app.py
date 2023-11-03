@@ -128,9 +128,17 @@ api.add_resource(Login,'/login',endpoint='login')
 class CheckSession(Resource):
     def get(self):
         if session['person_id']:
-            return {"message": "user in session"}
+            user_signed_in = User.query.filter_by(id= session['person_id']).first()
+            response = make_response(
+                jsonify(user_signed_in.to_dict()),
+                200
+            )
+            return response
         else:
-            return {"error": "user not in session:please signin/login"}
+            response = make_response(
+                jsonify({"error": "user not signed in"}, 401)
+            )
+            return response
 
 api.add_resource(CheckSession,'/session',endpoint='session' )
 
@@ -349,6 +357,18 @@ class GetGameReviews(Resource):
         response = make_response(jsonify(response_body), 400)
         response.headers['Content-Type'] = 'application/json'
         return response
+    
+    def delete(self, id):
+        review = GameReview.query.filter_by(id=id).first()
+        db.session.delete(review)
+        db.session.commit()
+
+        response = make_response(
+            jsonify({"message": "review deleted successfullly"}, 200)
+        )
+
+        return response
+    
 
 
 api.add_resource(GetGameReviews, '/game-reviews', endpoint='game-reviews')
@@ -369,6 +389,23 @@ class GetGameReviewById(Resource):
             "status": 404
         }
         return response_body
+    
+    def put(self, id):
+        review = GameReview.query.filter_by(id=id).first()
+
+        for attr in request.get_json():
+            setattr(review, attr, request.get_json()[attr])
+
+        db.session.add(review)
+        db.session.commit()
+
+        response = make_response(
+            jsonify(review.to_dict()),
+            200
+        )
+
+        return response
+        
 
 api.add_resource(GetGameReviewById, '/game-reviews/<int:id>')
 
