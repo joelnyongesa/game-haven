@@ -1,6 +1,7 @@
 import Button from "./Button"
 import { Link } from "react-router-dom"
 import { useNavigate } from "react-router-dom"
+import {motion} from 'framer-motion'
 
 function Navbar() {
     const navigate = useNavigate()
@@ -10,7 +11,9 @@ function Navbar() {
     }
 
   return (
-    <nav className='flex flex-row justify-between p-10'>
+    <nav 
+        className='flex flex-row justify-between p-10'
+    >
         <div></div>
         <h1 className='text-3xl font-bold' onClick={handleHeaderClick}>Game<span className="text-platinum">Haven</span></h1>
         <section className='flex flex-row justify-end '>

@@ -5,12 +5,16 @@ import Login from './Login';
 import Landing from './Landing';
 import Home from './Home';
 import AllGames from './AllGames';
+import Game from './Game'
+import {motion} from "framer-motion"
+
 import {useState, useEffect} from 'react'
 
 
 function App() {
 
   const [games, setGames] = useState([])
+  const [user, setUser] = useState(null)
 
     useEffect(()=>{
         fetch('/games')
@@ -19,17 +23,27 @@ function App() {
         .catch(e=> console.log(e))
     }, [])
 
-    console.log(games)
+    function updateUser(username){
+        setUser(username)
+    }
+
+    // console.log(games)
+    // console.log(user)
   
   return (
-    <div className="App">
+    <div
+    // initial={{opacity: 0}}
+    // animate={{opacity: 1}}
+    // transition={{duration: 2, delay: 2}}
+    >
       <Routes>
         <Route element={<Landing />}>
           <Route path='/' element={<Home />}/>
           <Route path='/home' element={<Home games={games}/>}/>
           <Route path='/signup' element={<SignUp />}/>
-          <Route path='/login' element={<Login />}/>
+          <Route path='/login' element={<Login updateUser={updateUser}/>}/>
           <Route path='/all-games' element={<AllGames games={games}/>}/>
+          <Route path='/all-games/:id' element={<Game />} />
         </Route>
         
       </Routes>

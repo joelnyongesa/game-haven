@@ -5,7 +5,7 @@ import Button from './Button';
 import { useNavigate } from 'react-router-dom';
 import { useSnackbar } from 'notistack';
 
-function Login() {
+function Login({ updateUser}) {
 
   const {enqueueSnackbar} = useSnackbar();
   const navigate = useNavigate();
@@ -53,7 +53,10 @@ function Login() {
                             // console.log("Invalid credentials");
                             enqueueSnackbar("Invalid username or password", {variant: "error"})
                           }
-                        })
+                        }
+                        )
+                        .then(data=>console.log(data))
+                        .catch(e=>console.log(e))
                         e.resetForm()
                     }}
                 >
