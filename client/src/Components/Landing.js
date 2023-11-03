@@ -2,11 +2,11 @@ import Navbar from "./Navbar"
 import { Outlet } from "react-router-dom"
 
 
-function Landing() {
+function Landing({ user }) {
     
   return (
     <div>
-        <Navbar />
+        <Navbar user={user} />
         <Outlet />
     </div>
   )

@@ -1,7 +1,7 @@
 import Button from "./Button"
 
 function GameCard({ games }) {
-    const gameCard = games.slice(0,6).map((game)=>(
+    const gameCard = games && games.slice(0,6).map((game)=>(
         <div key={game.id} className='max-w-sm rounded overflow-hidden m-10 w-1/6'>
             <img className='w-full h-400' src={game.image_url} alt={game.title}/>
             <div className='flex flex-col items-start my-3'>

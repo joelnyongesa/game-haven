@@ -14,7 +14,8 @@ import {useState, useEffect} from 'react'
 function App() {
 
   const [games, setGames] = useState([])
-  const [user, setUser] = useState(null)
+  const [user, setUser] = useState({})
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
 
     useEffect(()=>{
         fetch('/games')
@@ -23,27 +24,35 @@ function App() {
         .catch(e=> console.log(e))
     }, [])
 
-    function updateUser(username){
-        setUser(username)
-    }
+    // console.log(games);
+
+
+    useEffect(()=>{
+        fetch('/session')
+        .then(r=>r.json())
+        .then(data => {
+          setUser(data)
+          setIsLoggedIn(!isLoggedIn)
+        })
+        .catch(e=>console.log(e))
+    }, [])
 
     // console.log(games)
     // console.log(user)
+    // console.log(isLoggedIn);
   
   return (
-    <div
-    // initial={{opacity: 0}}
-    // animate={{opacity: 1}}
-    // transition={{duration: 2, delay: 2}}
-    >
+    <div>
       <Routes>
-        <Route element={<Landing />}>
+        <Route element={<Landing 
+                          user={user}
+                         />}>
           <Route path='/' element={<Home />}/>
           <Route path='/home' element={<Home games={games}/>}/>
           <Route path='/signup' element={<SignUp />}/>
-          <Route path='/login' element={<Login updateUser={updateUser}/>}/>
+          <Route path='/login' element={<Login />}/>
           <Route path='/all-games' element={<AllGames games={games}/>}/>
-          <Route path='/all-games/:id' element={<Game />} />
+          <Route path='/all-games/:id' element={<Game user={user} />} />
         </Route>
         
       </Routes>
