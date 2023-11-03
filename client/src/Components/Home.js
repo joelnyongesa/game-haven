@@ -4,8 +4,7 @@ import Footer from "./Footer"
 
 
 function Home({ games }) {
-    
-
+      console.log(games);
   return (
     <>
         <Hero />

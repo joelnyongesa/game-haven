@@ -1,6 +1,6 @@
 import React from 'react'
 
-function Button({content, className, type='button'}) {
+function Button({content, className, type='button', onClick}) {
   return (
     <button
         type={type}
@@ -15,6 +15,7 @@ function Button({content, className, type='button'}) {
                 hover:text-rich-black 
                 rounded-lg
                 ${className ? className: ''}`}
+      onClick={onClick}
     >
         {content}
     </button>
